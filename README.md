@@ -70,17 +70,22 @@ or off for this plugin specifically under **Settings → Page preview**.
 
 ## Settings
 
-Grouped into five tabs — Appearance, Search, Buttons, Recents, Behaviour — rather than one
-long scroll. Logo, title, colours, fonts, result counts, search scope, startup behaviour and
-new-tab replacement are all configurable.
+Grouped into five pages — Appearance, Search, Buttons, Recents and bookmarks, Behaviour —
+rather than one long scroll. Logo, title, colours, fonts, result counts, search scope,
+startup behaviour and new-tab replacement are all configurable.
 
-![Home Launcher settings](media/screenshot-settings-main.png)
+Built on Obsidian's declarative settings API, so every setting is **findable from Obsidian's
+own settings search**, and paths use real file and folder pickers instead of typed-out text.
+
+![Home Launcher settings](media/screenshot-home-settings.png)
 
 ## Installation
 
 ### From the community plugins list
 
 Settings → Community plugins → Browse → search for "Home Launcher" → Install → Enable.
+
+**Requires Obsidian 1.13.0 or later.**
 
 ### Manual
 
