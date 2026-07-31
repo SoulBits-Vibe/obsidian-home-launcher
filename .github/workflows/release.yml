@@ -16,12 +16,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "18.x"
+          node-version: "22.x"
 
       - name: Build plugin
         run: |
@@ -37,8 +37,11 @@ jobs:
             exit 1
           fi
 
+      # Build provenance is unavailable on user-owned private repos, so this is
+      # skipped until the repository is public — at which point it runs on its own.
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
             main.js
