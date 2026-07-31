@@ -10,6 +10,19 @@ import {
 import type { HomeAction, HomeSettings } from "./types";
 
 /**
+ * Obsidian re-exports moment as `typeof Moment`, a namespace type, which loses
+ * its call signature under strict type checking — every `moment()` call then
+ * resolves to `any` and silently defeats the unsafe-call/member-access rules.
+ *
+ * Narrowing it here restores type safety at the call sites without bundling a
+ * second copy of moment into the plugin.
+ */
+interface MomentLike {
+	format(template?: string): string;
+}
+const now = (): MomentLike => (moment as unknown as () => MomentLike)();
+
+/**
  * Executes an action described by settings data. Every button on the page runs
  * through here, so adding a new button is a settings change, not a code change.
  */
@@ -97,8 +110,8 @@ export class ActionRunner {
 		new QuickCaptureModal(this.app, this.captureTargetPath(), async (text) => {
 			const line = this.settings.quickCaptureFormat
 				.replace(/\{\{text\}\}/g, text)
-				.replace(/\{\{time\}\}/g, moment().format("HH:mm"))
-				.replace(/\{\{date\}\}/g, moment().format("YYYY-MM-DD"));
+				.replace(/\{\{time\}\}/g, now().format("HH:mm"))
+				.replace(/\{\{date\}\}/g, now().format("YYYY-MM-DD"));
 
 			const file = await this.resolveCaptureFile();
 			await this.appendLine(file, line, this.settings.captureHeading.trim());
@@ -119,7 +132,7 @@ export class ActionRunner {
 			this.app.internalPlugins.getPluginById("daily-notes")?.instance?.options ?? {};
 		const format = options.format?.trim() || "YYYY-MM-DD";
 		const folder = options.folder?.trim() ?? "";
-		const name = `${moment().format(format)}.md`;
+		const name = `${now().format(format)}.md`;
 		return normalizePath(folder ? `${folder}/${name}` : name);
 	}
 
@@ -235,7 +248,7 @@ export class ActionRunner {
 		// bound to the search plugin instance.
 		const search = this.app.internalPlugins.getPluginById("global-search")?.instance;
 		if (!search?.openGlobalSearch) {
-			new Notice("The core Search plugin is disabled.");
+			new Notice("The core search plugin is disabled.");
 			return;
 		}
 		search.openGlobalSearch(query);
@@ -243,7 +256,7 @@ export class ActionRunner {
 
 	private openUrl(url: string): void {
 		if (!/^https?:\/\//i.test(url)) {
-			new Notice("Only http and https links are allowed.");
+			new Notice("Only HTTP and HTTPS links are allowed.");
 			return;
 		}
 		window.open(url, "_blank");

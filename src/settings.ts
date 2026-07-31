@@ -96,7 +96,7 @@ export class HomeSettingTab extends PluginSettingTab {
 
 		new Setting(el)
 			.setName("Logo")
-			.setDesc("Show a Lucide icon, an image from your vault, or nothing.")
+			.setDesc("Show an icon, an image from your vault, or nothing.")
 			.addDropdown((d) =>
 				d
 					.addOptions({ none: "None", icon: "Icon", image: "Image" })
@@ -111,10 +111,10 @@ export class HomeSettingTab extends PluginSettingTab {
 		if (s.logoKind === "icon") {
 			new Setting(el)
 				.setName("Icon name")
-				.setDesc("Any Lucide icon name, e.g. house, sparkles, library.")
+				.setDesc("Lucide icon name, such as house, sparkles or library.")
 				.addText((t) =>
 					t
-						.setPlaceholder("house")
+						.setPlaceholder("")
 						.setValue(s.logoIcon)
 						.onChange(async (v) => {
 							s.logoIcon = v.trim();
@@ -205,7 +205,7 @@ export class HomeSettingTab extends PluginSettingTab {
 
 			new Setting(el)
 				.setName("Title size")
-				.setDesc("In em. Obsidian's H1 is about 1.8.")
+				.setDesc("In em. Obsidian's h1 is about 1.8.")
 				.addSlider((sl) =>
 				sl
 					.setLimits(0.8, 5, 0.1)
@@ -408,7 +408,7 @@ export class HomeSettingTab extends PluginSettingTab {
 
 		new Setting(el)
 			.setName("Markdown files only")
-			.setDesc("Exclude images, PDFs and other attachments from results.")
+			.setDesc("Only search Markdown files, ignoring attachments.")
 			.addToggle((t) =>
 				t.setValue(s.markdownOnly).onChange(async (v) => {
 					s.markdownOnly = v;
@@ -557,7 +557,7 @@ export class HomeSettingTab extends PluginSettingTab {
 			.setDesc("Lucide icon name.")
 			.addText((t) =>
 				t
-					.setPlaceholder("circle")
+					.setPlaceholder("")
 					.setValue(action.icon)
 					.onChange(async (v) => {
 						action.icon = v.trim();
@@ -664,7 +664,10 @@ export class HomeSettingTab extends PluginSettingTab {
 			new Setting(el)
 				.setName("Clear recent files")
 				.addButton((b) =>
-					b.setButtonText("Clear").setDestructive().onClick(async () => {
+					// setWarning is deprecated in favour of setDestructive, but that is
+					// @since 1.13.0 and this plugin supports 1.11.0. Deprecated-but-
+					// present beats calling a method that does not exist yet.
+					b.setButtonText("Clear").setWarning().onClick(async () => {
 						s.recentsStore = [];
 						await this.save();
 					}),
@@ -675,7 +678,7 @@ export class HomeSettingTab extends PluginSettingTab {
 
 		new Setting(el)
 			.setName("Show bookmarks")
-			.setDesc("Reads from Obsidian's core Bookmarks plugin.")
+			.setDesc("Reads from Obsidian's core bookmarks plugin.")
 			.addToggle((t) =>
 				t.setValue(s.showBookmarks).onChange(async (v) => {
 					s.showBookmarks = v;
@@ -736,7 +739,7 @@ export class HomeSettingTab extends PluginSettingTab {
 
 		new Setting(el)
 			.setName("New page folder")
-			.setDesc("Where the New page button creates notes. Empty uses Obsidian's default.")
+			.setDesc("Where the new page button creates notes. Empty uses Obsidian's default.")
 			.addText((t) =>
 				t
 					.setPlaceholder("Default")
@@ -749,7 +752,7 @@ export class HomeSettingTab extends PluginSettingTab {
 
 		new Setting(el)
 			.setName("Quick capture goes to")
-			.setDesc("Daily note uses your Daily Notes folder, date format and template.")
+			.setDesc("Daily note uses your daily notes folder, date format and template.")
 			.addDropdown((d) =>
 				d
 					.addOptions({ daily: "Today's daily note", file: "A specific file" })

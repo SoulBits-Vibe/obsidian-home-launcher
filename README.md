@@ -102,6 +102,20 @@ vault:
 OBSIDIAN_PLUGIN_DIR="/path/to/vault/.obsidian/plugins/home-launcher" npm run build
 ```
 
+## What it accesses, and why
+
+- **Reads your file list.** Search has to know what exists, so it enumerates file paths
+  through Obsidian's own vault API. This is what powers matching on names, paths, aliases,
+  headings and tags.
+- **Reads note contents.** Only when content search is on, and only to find your search terms
+  and build the excerpt shown in the result. Large files are skipped to keep typing responsive.
+- **Writes only when you ask.** Creating a page, quick capture, and creating a note from an
+  unresolved link. Nothing is written in the background.
+
+**Nothing leaves your vault.** There are no network requests, no telemetry, no analytics, and
+no external services. Search runs entirely locally and does not depend on any other plugin.
+The only thing that opens a URL is a button you configured to do exactly that.
+
 ## Credits
 
 Built by [SoulBits](https://github.com/SoulBits-Vibe) with [Claude Code](https://claude.com/claude-code).

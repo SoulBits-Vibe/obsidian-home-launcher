@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
+import obsidianmd from "eslint-plugin-obsidianmd";
 
 /**
  * Type-aware linting, matching the rules the Obsidian plugin reviewer runs.
@@ -12,6 +13,9 @@ export default tseslint.config(
 	},
 	js.configs.recommended,
 	...tseslint.configs.strictTypeChecked,
+	// The plugin-directory reviewer's own ruleset. Catches things the generic
+	// TypeScript rules can't — notably calling APIs newer than minAppVersion.
+	...obsidianmd.configs.recommended,
 	{
 		// PluginSettingTab.display() is deprecated in favour of the declarative
 		// getSettingDefinitions() API, which is @since 1.13.0. Adopting it would

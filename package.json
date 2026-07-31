@@ -1,6 +1,6 @@
 {
   "name": "obsidian-home-launcher",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Custom home page and start page for your vault: a search tab and launcher that replaces new tabs.",
   "main": "main.js",
   "type": "module",
@@ -17,6 +17,7 @@
     "@types/node": "^22.10.0",
     "esbuild": "^0.24.0",
     "eslint": "^9.39.5",
+    "eslint-plugin-obsidianmd": "^0.4.1",
     "obsidian": "latest",
     "tslib": "^2.8.1",
     "typescript": "^5.7.2",
