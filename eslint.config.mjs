@@ -13,6 +13,20 @@ export default tseslint.config(
 	js.configs.recommended,
 	...tseslint.configs.strictTypeChecked,
 	{
+		// PluginSettingTab.display() is deprecated in favour of the declarative
+		// getSettingDefinitions() API, which is @since 1.13.0. Adopting it would
+		// force minAppVersion up to 1.13.0 and drop every user on an older build,
+		// so this stays on display() deliberately.
+		//
+		// Revisit once 1.13 is widely adopted: raise minAppVersion, port
+		// settings.ts to getSettingDefinitions (SettingDefinitionList suits the
+		// button editor), then delete this override.
+		files: ["src/settings.ts"],
+		rules: {
+			"@typescript-eslint/no-deprecated": "off",
+		},
+	},
+	{
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
