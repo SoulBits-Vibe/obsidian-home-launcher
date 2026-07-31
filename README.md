@@ -79,6 +79,22 @@ own settings search**, and paths use real file and folder pickers instead of typ
 
 ![Home Launcher settings](media/screenshot-home-settings.png)
 
+## Compatibility
+
+| Your Obsidian | Version you get |
+| --- | --- |
+| 1.13.0 and later | **1.1.0** |
+| 1.11.0 – 1.12.x | **1.0.2** |
+| Older than 1.11 | not supported |
+
+You don't have to pick. Obsidian reads `versions.json` and installs the newest release your
+app can run, so installing from the community browser on 1.12 quietly gets you 1.0.2.
+
+1.0.2 has the same search, buttons, quote, recents and bookmarks. The difference is the
+settings screen: it uses the older API, so settings don't show up in Obsidian's settings
+search and paths are typed by hand rather than picked. Everything on the home page itself is
+identical.
+
 ## Installation
 
 ### From the community plugins list
