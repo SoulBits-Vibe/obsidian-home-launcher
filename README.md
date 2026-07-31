@@ -4,7 +4,7 @@ Replaces new tabs in [Obsidian](https://obsidian.md) with a home page you compos
 search across your whole vault, buttons you define yourself, and your recent files and
 bookmarks.
 
-![Home Launcher](media/screenshot.png)
+![The Home Launcher home page](media/screenshot-home.png)
 
 ## Why
 
@@ -73,6 +73,8 @@ or off for this plugin specifically under **Settings → Page preview**.
 Grouped into five tabs — Appearance, Search, Buttons, Recents, Behaviour — rather than one
 long scroll. Logo, title, colours, fonts, result counts, search scope, startup behaviour and
 new-tab replacement are all configurable.
+
+![Home Launcher settings](media/screenshot-settings-main.png)
 
 ## Installation
 
