@@ -1,0 +1,721 @@
+/* ══ Home Page ═══════════════════════════════════════════════════════════ */
+
+.home-launcher-view {
+	--home-gap: var(--size-4-4);
+	--home-max-width: 720px;
+	--home-radius: 14px;
+
+	display: flex;
+	justify-content: center;
+	overflow-y: auto;
+	padding: var(--size-4-6) var(--size-4-6) var(--size-4-12);
+}
+
+.home-launcher-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--home-gap);
+	width: 100%;
+	max-width: var(--home-max-width);
+	/* Enough to feel deliberate, not so much that search lands a third down. */
+	margin-top: min(5vh, 48px);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+
+.home-launcher-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--size-4-2);
+	text-align: center;
+}
+
+/* Values come in as custom properties set on .home-launcher-header. */
+.home-launcher-header {
+	--home-logo-scale: 1.2;
+	--home-title-size: 1.8em;
+	--home-title-weight: 600;
+	--home-title-font: var(--font-text);
+	--home-logo-color: var(--text-normal);
+	--home-title-color: var(--text-normal);
+}
+
+.home-launcher-logo {
+	display: flex;
+	color: var(--text-normal);
+}
+
+.home-launcher-logo .svg-icon {
+	width: calc(48px * var(--home-logo-scale));
+	height: calc(48px * var(--home-logo-scale));
+	stroke-width: 1.5;
+}
+
+.home-launcher-logo.use-accent {
+	color: var(--interactive-accent);
+}
+
+.home-launcher-logo.use-custom {
+	color: var(--home-logo-color);
+}
+
+.home-launcher-logo-img {
+	width: calc(64px * var(--home-logo-scale));
+	height: auto;
+	object-fit: contain;
+}
+
+.home-launcher-wordmark {
+	font-size: var(--home-title-size);
+	font-weight: var(--home-title-weight);
+	font-family: var(--home-title-font);
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+	color: var(--text-normal);
+}
+
+.home-launcher-wordmark.use-custom {
+	color: var(--home-title-color);
+}
+
+/* ── Quote ──────────────────────────────────────────────────────────── */
+
+.home-launcher-quote {
+	max-width: 34em;
+	margin: 0 auto;
+	/* Sits on top of the flex gap so the quote reads as its own element
+	   rather than crowding the logo and title. */
+	padding: var(--size-4-2) 0;
+	text-align: center;
+	font-style: italic;
+	color: var(--text-muted);
+	line-height: 1.5;
+	text-wrap: balance;
+}
+
+.home-launcher-quote.is-clickable {
+	cursor: pointer;
+}
+
+.home-launcher-quote.is-clickable:hover {
+	color: var(--text-normal);
+}
+
+.home-launcher-quote-text {
+	font-size: var(--font-ui-medium);
+}
+
+.home-launcher-quote-source {
+	margin-top: var(--size-2-2);
+	font-style: normal;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+}
+
+.home-launcher-wordmark.use-accent {
+	color: var(--interactive-accent);
+}
+
+/* ── Search ─────────────────────────────────────────────────────────── */
+
+.home-launcher-search {
+	position: relative;
+	width: 100%;
+}
+
+.home-launcher-searchbar {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: 0 var(--size-4-3);
+	height: 42px;
+
+	background: var(--background-primary-alt);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.home-launcher-searchbar:focus-within {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.12);
+}
+
+/* Fuse the bar to the dropdown while results are showing. */
+.home-launcher-searchbar.has-suggestions {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom-color: transparent;
+}
+
+.home-launcher-search-icon {
+	display: flex;
+	color: var(--text-faint);
+	flex-shrink: 0;
+}
+
+/*
+ * The bar draws the border and background; the input must contribute no chrome
+ * of its own or you get a box inside a box.
+ *
+ * The parent + element qualifiers are load-bearing. Obsidian styles fields with
+ * `input[type="text"]` (specificity 0,1,1), which outranks a bare class
+ * (0,1,0) — so `.home-launcher-search-input` alone silently loses the cascade.
+ */
+.home-launcher-searchbar input.home-launcher-search-input,
+.home-launcher-searchbar input.home-launcher-search-input:hover,
+.home-launcher-searchbar input.home-launcher-search-input:focus,
+.home-launcher-searchbar input.home-launcher-search-input:focus-visible,
+.home-launcher-searchbar input.home-launcher-search-input:active {
+	flex: 1;
+	width: 100%;
+	min-width: 0;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	outline: none;
+	font-size: var(--font-ui-medium);
+	font-family: inherit;
+	color: var(--text-normal);
+}
+
+.home-launcher-searchbar input.home-launcher-search-input::placeholder {
+	color: var(--text-faint);
+}
+
+/* WebKit adds its own decorations to search-ish inputs. */
+.home-launcher-searchbar input.home-launcher-search-input::-webkit-search-decoration,
+.home-launcher-searchbar input.home-launcher-search-input::-webkit-search-cancel-button {
+	display: none;
+}
+
+.home-launcher-search-clear {
+	display: none;
+	color: var(--text-faint);
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.home-launcher-searchbar.has-value .home-launcher-search-clear {
+	display: flex;
+}
+
+.home-launcher-search-clear:hover {
+	color: var(--text-normal);
+}
+
+/* ── Suggestions ────────────────────────────────────────────────────── */
+
+.home-launcher-suggestions {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 20;
+
+	padding: var(--size-4-1);
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-top: none;
+	border-radius: 0 0 10px 10px;
+	box-shadow: var(--shadow-s);
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.home-launcher-suggestions.is-open {
+	display: block;
+}
+
+.home-launcher-suggestion {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: var(--size-4-2) var(--size-4-3);
+	border-radius: calc(var(--home-radius) - 6px);
+	cursor: pointer;
+}
+
+.home-launcher-suggestion-icon {
+	display: flex;
+	color: var(--text-faint);
+	flex-shrink: 0;
+}
+
+.home-launcher-suggestion-body {
+	min-width: 0;
+	flex: 1;
+}
+
+.home-launcher-suggestion-titlerow {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	min-width: 0;
+}
+
+.home-launcher-suggestion-title {
+	color: var(--text-normal);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-suggestion-meta {
+	display: flex;
+	align-items: baseline;
+	gap: var(--size-4-2);
+	margin-left: auto;
+	flex-shrink: 0;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+}
+
+.home-launcher-suggestion-source {
+	padding: 1px 6px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	line-height: 1.5;
+}
+
+.home-launcher-suggestion-folder {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	min-width: 0;
+}
+
+.home-launcher-suggestion-folder > span:last-child {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-suggestion-folder-icon {
+	display: flex;
+	flex-shrink: 0;
+}
+
+.home-launcher-suggestion-folder-icon .svg-icon {
+	width: 12px;
+	height: 12px;
+}
+
+.home-launcher-suggestion-heading {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-suggestion-context {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-suggestion-excerpt {
+	margin-top: 2px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	line-height: 1.45;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.home-launcher-suggestion-title.is-unresolved {
+	opacity: 0.55;
+}
+
+.home-launcher-suggestion-path {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-highlight {
+	color: var(--text-accent);
+	font-weight: var(--font-semibold);
+}
+
+.home-launcher-suggestion.is-selected {
+	background: var(--background-modifier-hover);
+}
+
+.home-launcher-suggestions.use-accent-color .home-launcher-suggestion.is-selected {
+	background: var(--interactive-accent);
+}
+
+.home-launcher-suggestions.use-accent-color .home-launcher-suggestion.is-selected,
+.home-launcher-suggestions.use-accent-color .home-launcher-suggestion.is-selected .home-launcher-suggestion-title,
+.home-launcher-suggestions.use-accent-color .home-launcher-suggestion.is-selected .home-launcher-suggestion-path,
+.home-launcher-suggestions.use-accent-color .home-launcher-suggestion.is-selected .home-launcher-suggestion-icon,
+.home-launcher-suggestions.use-accent-color .home-launcher-suggestion.is-selected .home-launcher-highlight {
+	color: var(--text-on-accent);
+}
+
+/* ── Keyboard hints ─────────────────────────────────────────────────── */
+
+.home-launcher-hints {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--size-4-3);
+
+	margin-top: var(--size-4-1);
+	padding: var(--size-4-2);
+	border-top: 1px solid var(--background-modifier-border);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+}
+
+.home-launcher-hint {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+}
+
+.home-launcher-hint kbd {
+	padding: 1px 5px;
+	background: var(--background-modifier-border);
+	border-radius: 4px;
+	font-family: var(--font-interface);
+	font-size: var(--font-ui-smaller);
+}
+
+/* ── Action buttons ─────────────────────────────────────────────────── */
+
+.home-launcher-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--size-4-2);
+	width: 100%;
+}
+
+.home-launcher-action {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	height: auto;
+	padding: var(--size-4-2) var(--size-4-3);
+
+	background: var(--background-primary-alt);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 999px;
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+	transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.home-launcher-action:hover {
+	background: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border-hover);
+	color: var(--text-normal);
+}
+
+.home-launcher-action-icon {
+	display: flex;
+}
+
+.home-launcher-action-icon .svg-icon {
+	width: 16px;
+	height: 16px;
+}
+
+/* Icon-only */
+.home-launcher-actions.is-icon .home-launcher-action {
+	padding: var(--size-4-2);
+	border-radius: 10px;
+}
+
+/* Cards */
+.home-launcher-actions.is-card {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.home-launcher-actions.is-card .home-launcher-action {
+	flex-direction: column;
+	gap: var(--size-4-2);
+	padding: var(--size-4-4) var(--size-4-3);
+	border-radius: var(--home-radius);
+	text-align: center;
+}
+
+.home-launcher-actions.is-card .home-launcher-action-icon .svg-icon {
+	width: 22px;
+	height: 22px;
+}
+
+/* ── Blocks ─────────────────────────────────────────────────────────── */
+
+.home-launcher-blocks {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: var(--home-gap);
+	width: 100%;
+	margin-top: var(--size-4-4);
+}
+
+.home-launcher-block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	min-width: 0;
+}
+
+.home-launcher-block-head {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: 0 var(--size-4-2);
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.home-launcher-block-icon {
+	display: flex;
+}
+
+.home-launcher-block-icon .svg-icon {
+	width: 14px;
+	height: 14px;
+}
+
+.home-launcher-block-body {
+	display: flex;
+	flex-direction: column;
+}
+
+.home-launcher-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: var(--size-4-2);
+	border-radius: 8px;
+	cursor: pointer;
+	min-width: 0;
+}
+
+.home-launcher-row:hover {
+	background: var(--background-modifier-hover);
+}
+
+.home-launcher-row-icon {
+	display: flex;
+	color: var(--text-faint);
+	flex-shrink: 0;
+}
+
+.home-launcher-row-icon .svg-icon {
+	width: 15px;
+	height: 15px;
+}
+
+.home-launcher-row-body {
+	min-width: 0;
+	flex: 1;
+}
+
+.home-launcher-row-title {
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-row-path {
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.home-launcher-empty {
+	padding: var(--size-4-2);
+	color: var(--text-faint);
+	font-size: var(--font-ui-small);
+}
+
+/* ── Quick capture modal ────────────────────────────────────────────── */
+
+.home-launcher-capture-input {
+	width: 100%;
+	resize: vertical;
+	font-family: var(--font-text);
+}
+
+.home-launcher-capture-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-3);
+}
+
+.home-launcher-capture-target {
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+}
+
+/* ── Settings: tabs ─────────────────────────────────────────────────── */
+
+.home-launcher-settings-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-2);
+	position: sticky;
+	top: 0;
+	z-index: 5;
+
+	margin-bottom: var(--size-4-4);
+	padding-bottom: var(--size-4-2);
+	background: var(--background-primary);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.home-launcher-settings-tab {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	padding: var(--size-4-1) var(--size-4-3);
+
+	background: transparent;
+	border: none;
+	border-radius: 6px;
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+}
+
+.home-launcher-settings-tab:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.home-launcher-settings-tab.is-active {
+	background: var(--background-modifier-active-hover);
+	color: var(--text-normal);
+	font-weight: var(--font-semibold);
+}
+
+.home-launcher-settings-tab-icon {
+	display: flex;
+}
+
+.home-launcher-settings-tab-icon .svg-icon {
+	width: 15px;
+	height: 15px;
+}
+
+/* The first heading in a pane sits right under the tabs — drop its top gap. */
+.home-launcher-settings-body > .setting-item:first-child.setting-item-heading {
+	padding-top: 0;
+	border-top: none;
+}
+
+/* ── Settings: action editor ────────────────────────────────────────── */
+
+.home-launcher-action-editor {
+	margin-bottom: var(--size-4-3);
+	padding: 0 var(--size-4-3) var(--size-4-2);
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+}
+
+.home-launcher-action-editor.is-disabled .home-launcher-action-preview,
+.home-launcher-action-editor.is-disabled .home-launcher-action-editor-head > span:first-of-type {
+	opacity: 0.5;
+}
+
+.home-launcher-action-off {
+	padding: 1px 6px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	font-size: var(--font-ui-smaller);
+	font-weight: normal;
+	color: var(--text-faint);
+}
+
+.home-launcher-action-editor-head {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: var(--size-4-2) 0;
+	font-weight: var(--font-semibold);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.home-launcher-action-preview {
+	display: flex;
+	color: var(--text-muted);
+}
+
+.home-launcher-action-controls {
+	display: flex;
+	gap: var(--size-2-2);
+	margin-left: auto;
+}
+
+.home-launcher-icon-button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.home-launcher-action-editor .setting-item {
+	border-top: none;
+	padding: var(--size-4-2) 0;
+}
+
+/* ── Phone ──────────────────────────────────────────────────────────── */
+
+.home-launcher-view.is-phone {
+	padding: var(--size-4-4) var(--size-4-3) var(--size-4-8);
+}
+
+.home-launcher-view.is-phone .home-launcher-content {
+	margin-top: var(--size-4-6);
+}
+
+.home-launcher-view.is-phone .home-launcher-wordmark {
+	font-size: 2em !important;
+}
+
+.home-launcher-view.is-phone .home-launcher-blocks {
+	grid-template-columns: 1fr;
+}
+
+.home-launcher-view.is-phone .home-launcher-suggestions {
+	max-height: 45vh;
+}
+
+@media (max-width: 480px) {
+	.home-launcher-blocks {
+		grid-template-columns: 1fr;
+	}
+}

@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build output — shipped as release assets, not committed
+main.js
+*.js.map
+
+# Plugin runtime data
+data.json
+
+# Local assistant/session working files — never publish
+.claude/
+memory/
+MEMORY.md
+
+# OS
+.DS_Store

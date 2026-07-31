@@ -1,0 +1,10 @@
+{
+  "id": "home-launcher",
+  "name": "Home Launcher",
+  "version": "0.1.0",
+  "minAppVersion": "1.11.0",
+  "description": "Replaces new tabs with a custom home page and start page: search names and note contents, add your own launcher buttons, and see recent files and bookmarks.",
+  "author": "SoulBits",
+  "authorUrl": "https://github.com/SoulBits-Vibe",
+  "isDesktopOnly": false
+}
