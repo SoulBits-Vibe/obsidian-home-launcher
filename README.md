@@ -4,7 +4,7 @@ Replaces new tabs in [Obsidian](https://obsidian.md) with a home page you compos
 search across your whole vault, buttons you define yourself, and your recent files and
 bookmarks.
 
-![Home Launcher](docs/screenshot.png)
+![Home Launcher](media/screenshot.png)
 
 ## Why
 
