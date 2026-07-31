@@ -702,8 +702,10 @@
 	margin-top: var(--size-4-6);
 }
 
-.home-launcher-view.is-phone .home-launcher-wordmark {
-	font-size: 2em !important;
+/* Override the custom property rather than the declaration, so no !important
+   is needed to beat the value set on the header element. */
+.home-launcher-view.is-phone .home-launcher-header {
+	--home-title-size: 2em;
 }
 
 .home-launcher-view.is-phone .home-launcher-blocks {

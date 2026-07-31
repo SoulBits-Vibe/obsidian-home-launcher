@@ -35,7 +35,7 @@ export default class HomeLauncherPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: "open-home-launcher-new-tab",
+			id: "open-in-new-tab",
 			name: "Open home page in new tab",
 			callback: () => void this.openHome(true),
 		});
@@ -49,19 +49,19 @@ export default class HomeLauncherPlugin extends Plugin {
 		this.addCommand({
 			id: "quick-capture",
 			name: "Quick capture",
-			callback: () => new ActionRunner(this.app, this.settings).quickCapture(),
+			callback: () => { new ActionRunner(this.app, this.settings).quickCapture(); },
 		});
 
 		this.registerEvent(
-			this.app.workspace.on("file-open", (file) => this.trackRecent(file)),
+			this.app.workspace.on("file-open", (file) => { this.trackRecent(file); }),
 		);
 
 		// Keep the blocks honest when files move or disappear.
-		this.registerEvent(this.app.vault.on("rename", () => this.refreshBlocks()));
-		this.registerEvent(this.app.vault.on("delete", () => this.refreshBlocks()));
+		this.registerEvent(this.app.vault.on("rename", () => { this.refreshBlocks(); }));
+		this.registerEvent(this.app.vault.on("delete", () => { this.refreshBlocks(); }));
 
 		this.registerEvent(
-			this.app.workspace.on("layout-change", () => this.replaceEmptyTabs()),
+			this.app.workspace.on("layout-change", () => { this.replaceEmptyTabs(); }),
 		);
 
 		this.app.workspace.onLayoutReady(() => {
@@ -79,7 +79,7 @@ export default class HomeLauncherPlugin extends Plugin {
 	async openHome(newTab: boolean): Promise<void> {
 		const existing = this.app.workspace.getLeavesOfType(HOME_VIEW_TYPE);
 		if (!newTab && existing.length) {
-			this.app.workspace.revealLeaf(existing[0]);
+			void this.app.workspace.revealLeaf(existing[0]);
 			return;
 		}
 		const leaf = this.app.workspace.getLeaf(newTab ? "tab" : false);
@@ -135,9 +135,13 @@ export default class HomeLauncherPlugin extends Plugin {
 	// ── Settings ──────────────────────────────────────────────────────────
 
 	async loadSettings(): Promise<void> {
+		// loadData() is untyped, so narrow it before merging rather than letting
+		// `any` flow into the settings object.
+		const saved = (await this.loadData()) as Partial<HomeSettings> | null;
+
 		// structuredClone keeps nested defaults (actions, recentsStore) from being
 		// shared by reference with DEFAULT_SETTINGS and mutated in place.
-		this.settings = Object.assign(structuredClone(DEFAULT_SETTINGS), await this.loadData());
+		this.settings = Object.assign(structuredClone(DEFAULT_SETTINGS), saved ?? {});
 	}
 
 	private refreshTimer: number | null = null;

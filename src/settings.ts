@@ -145,7 +145,6 @@ export class HomeSettingTab extends PluginSettingTab {
 					sl
 						.setLimits(0.4, 4, 0.1)
 						.setValue(s.logoScale)
-						.setDynamicTooltip()
 						.onChange(async (v) => {
 							s.logoScale = v;
 							await this.save();
@@ -211,7 +210,6 @@ export class HomeSettingTab extends PluginSettingTab {
 				sl
 					.setLimits(0.8, 5, 0.1)
 					.setValue(s.fontSize)
-					.setDynamicTooltip()
 					.onChange(async (v) => {
 						s.fontSize = v;
 						await this.save();
@@ -222,7 +220,6 @@ export class HomeSettingTab extends PluginSettingTab {
 				sl
 					.setLimits(100, 900, 100)
 					.setValue(s.fontWeight)
-					.setDynamicTooltip()
 					.onChange(async (v) => {
 						s.fontWeight = v;
 						await this.save();
@@ -355,7 +352,6 @@ export class HomeSettingTab extends PluginSettingTab {
 				sl
 					.setLimits(3, 20, 1)
 					.setValue(s.maxResults)
-					.setDynamicTooltip()
 					.onChange(async (v) => {
 						s.maxResults = v;
 						await this.save();
@@ -369,7 +365,6 @@ export class HomeSettingTab extends PluginSettingTab {
 				sl
 					.setLimits(0, 500, 25)
 					.setValue(s.searchDelay)
-					.setDynamicTooltip()
 					.onChange(async (v) => {
 						s.searchDelay = v;
 						await this.save();
@@ -486,7 +481,7 @@ export class HomeSettingTab extends PluginSettingTab {
 		);
 
 		const list = el.createDiv({ cls: "home-launcher-action-list" });
-		s.actions.forEach((action, i) => this.actionEditor(list, action, i));
+		s.actions.forEach((action, i) => { this.actionEditor(list, action, i); });
 
 		new Setting(el).addButton((b) =>
 			b
@@ -650,7 +645,6 @@ export class HomeSettingTab extends PluginSettingTab {
 				sl
 					.setLimits(3, 25, 1)
 					.setValue(s.maxRecents)
-					.setDynamicTooltip()
 					.onChange(async (v) => {
 						s.maxRecents = v;
 						await this.save();
@@ -670,7 +664,7 @@ export class HomeSettingTab extends PluginSettingTab {
 			new Setting(el)
 				.setName("Clear recent files")
 				.addButton((b) =>
-					b.setButtonText("Clear").setWarning().onClick(async () => {
+					b.setButtonText("Clear").setDestructive().onClick(async () => {
 						s.recentsStore = [];
 						await this.save();
 					}),
@@ -695,7 +689,6 @@ export class HomeSettingTab extends PluginSettingTab {
 				sl
 					.setLimits(3, 25, 1)
 					.setValue(s.maxBookmarks)
-					.setDynamicTooltip()
 					.onChange(async (v) => {
 						s.maxBookmarks = v;
 						await this.save();

@@ -4,6 +4,10 @@ import "obsidian";
  * Minimal typings for the internal APIs this plugin touches. These are not part
  * of Obsidian's public API and may change between releases — every call site
  * guards for absence.
+ *
+ * Everything here is typed precisely on purpose. An index signature such as
+ * `[key: string]: unknown` makes member access resolve to `any`, which silently
+ * defeats strict type checking at every call site that reads these objects.
  */
 declare module "obsidian" {
 	interface BookmarkItem {
@@ -15,28 +19,36 @@ declare module "obsidian" {
 		items?: BookmarkItem[];
 	}
 
+	/** Core Daily Notes settings, used to resolve today's note. */
+	interface DailyNotesOptions {
+		folder?: string;
+		format?: string;
+		template?: string;
+	}
+
+	interface InternalPluginInstance {
+		openGlobalSearch?(query: string): void;
+		getBookmarks?(): BookmarkItem[];
+		options?: DailyNotesOptions;
+	}
+
+	interface InternalPluginWrapper {
+		enabled: boolean;
+		instance?: InternalPluginInstance;
+	}
+
+	interface ObsidianCommand {
+		id: string;
+		name: string;
+	}
+
 	interface App {
 		commands: {
 			executeCommandById(id: string): boolean;
-			listCommands(): { id: string; name: string }[];
-			commands: Record<string, { id: string; name: string }>;
+			listCommands(): ObsidianCommand[];
 		};
 		internalPlugins: {
-			getPluginById(id: string): {
-				enabled: boolean;
-				instance?: {
-					openGlobalSearch?(query: string): void;
-					getBookmarks?(): BookmarkItem[];
-					/** Core Daily Notes settings. */
-					options?: {
-						folder?: string;
-						format?: string;
-						template?: string;
-					};
-					[key: string]: unknown;
-				};
-			} | null;
+			getPluginById(id: string): InternalPluginWrapper | null;
 		};
 	}
-
 }

@@ -71,21 +71,23 @@ export class HomeView extends ItemView {
 		return "house";
 	}
 
-	async onOpen(): Promise<void> {
+	onOpen(): Promise<void> {
 		this.render();
 
 		// Focus only when the view first opens. Doing this inside render() meant
 		// every settings keystroke re-rendered the view and stole focus from the
 		// field being typed into.
 		if (this.plugin.settings.focusSearchOnOpen && !Platform.isPhone) {
-			window.setTimeout(() => this.inputEl?.focus(), 0);
+			window.setTimeout(() => { this.inputEl?.focus(); }, 0);
 		}
+		return Promise.resolve();
 	}
 
-	async onClose(): Promise<void> {
+	onClose(): Promise<void> {
 		if (this.searchTimer !== null) window.clearTimeout(this.searchTimer);
 		this.contentSignal.aborted = true;
 		this.contentEl.empty();
+		return Promise.resolve();
 	}
 
 	/** Re-render in place — used when settings change or the vault updates. */
@@ -271,7 +273,7 @@ export class HomeView extends ItemView {
 			if (this.searchTimer !== null) window.clearTimeout(this.searchTimer);
 			if (s.searchDelay > 0) {
 				this.searchTimer = window.setTimeout(
-					() => this.updateResults(value),
+					() => { this.updateResults(value); },
 					s.searchDelay,
 				);
 			} else {
@@ -279,7 +281,7 @@ export class HomeView extends ItemView {
 			}
 		});
 
-		this.inputEl.addEventListener("keydown", (evt) => this.onSearchKey(evt));
+		this.inputEl.addEventListener("keydown", (evt) => { this.onSearchKey(evt); });
 	}
 
 	private onSearchKey(evt: KeyboardEvent): void {
@@ -528,9 +530,9 @@ export class HomeView extends ItemView {
 			return;
 		}
 		for (const file of files) {
-			this.createFileRow(block, file.basename, file.path, "file-text", () =>
-				this.app.workspace.getLeaf(false).openFile(file),
-			);
+			this.createFileRow(block, file.basename, file.path, "file-text", () => {
+				void this.app.workspace.getLeaf(false).openFile(file);
+			});
 		}
 	}
 

@@ -26,7 +26,12 @@ export interface HomeAction {
 	 * Hidden buttons stay in settings but do not render, so switching one off
 	 * never means rebuilding it later. Treated as true when absent.
 	 */
-	enabled: boolean;
+	/**
+	 * Optional because buttons saved before this flag existed have no value for
+	 * it. Absent means visible, so `enabled !== false` is the correct test —
+	 * a bare truthiness check would silently hide every pre-existing button.
+	 */
+	enabled?: boolean;
 }
 
 /** Where quick capture appends. Daily note follows your Daily Notes settings. */

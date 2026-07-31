@@ -226,18 +226,19 @@ export class ActionRunner {
 			new Notice("File explorer is not open.");
 			return;
 		}
-		this.app.workspace.revealLeaf(explorer);
+		void this.app.workspace.revealLeaf(explorer);
 		this.app.workspace.trigger("reveal-folder", folder);
 	}
 
 	private runSearch(query: string): void {
-		const open = this.app.internalPlugins.getPluginById("global-search")?.instance
-			?.openGlobalSearch;
-		if (!open) {
+		// Called as a method rather than extracted to a variable, so `this` stays
+		// bound to the search plugin instance.
+		const search = this.app.internalPlugins.getPluginById("global-search")?.instance;
+		if (!search?.openGlobalSearch) {
 			new Notice("The core Search plugin is disabled.");
 			return;
 		}
-		open(query);
+		search.openGlobalSearch(query);
 	}
 
 	private openUrl(url: string): void {
