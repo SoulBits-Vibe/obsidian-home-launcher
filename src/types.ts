@@ -1,9 +1,9 @@
 export const HOME_VIEW_TYPE = "home-launcher-view";
 
 /**
- * What an action button does when clicked. This is the piece Home tab never had:
- * buttons are described by data in settings, so adding one never requires a
- * second plugin poking at the DOM.
+ * What an action button does when clicked. Buttons are described entirely by
+ * data in settings, so adding one is a configuration change rather than a code
+ * change — and never requires a companion plugin injecting into the DOM.
  */
 export type ActionKind =
 	| "new-note"
