@@ -547,10 +547,17 @@ export class HomeView extends ItemView {
 
 	private renderBookmarks(parent: HTMLElement): void {
 		const s = this.plugin.settings;
-		// Newest first. Bookmarks are stored oldest-first, so taking from the front
-		// would surface the ones you set up long ago and buried, while anything
-		// added recently never appears. This matches the Recents block beside it.
-		const items = this.collectBookmarks().slice(-s.maxBookmarks).reverse();
+		// Obsidian keeps a bookmark entry after its file is deleted, and its own
+		// bookmarks pane hides those. Match that: a vault can easily hold more
+		// dead entries than live ones, and showing them fills the block with rows
+		// that lead nowhere.
+		//
+		// Taking from the end keeps the most recently bookmarked items when there
+		// are more than fit, but the slice preserves stored order so the block
+		// reads the same way as the bookmarks pane.
+		const items = this.collectBookmarks()
+			.filter((b) => b.path && this.app.vault.getFileByPath(b.path))
+			.slice(-s.maxBookmarks);
 
 		const block = this.createBlock(parent, "Bookmarks", "bookmark");
 		if (!items.length) {
