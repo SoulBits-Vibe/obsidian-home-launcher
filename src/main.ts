@@ -67,6 +67,12 @@ export default class HomeLauncherPlugin extends Plugin {
 		this.app.workspace.onLayoutReady(() => {
 			if (this.settings.openOnStartup) void this.openHome(false);
 			this.replaceEmptyTabs();
+
+			// Views are restored before the vault index is populated, so a Home tab
+			// reopened at startup renders against an empty index: bookmarks fall back
+			// to raw paths, and the quote file and image logo resolve to nothing.
+			// A full re-render once files actually resolve fixes all of them.
+			this.refreshViews();
 		});
 	}
 

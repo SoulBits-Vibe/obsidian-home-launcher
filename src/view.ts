@@ -22,6 +22,13 @@ const SOURCE_ICONS: Record<MatchSource, string> = {
 	content: "align-left",
 };
 
+/** File name without its folders or extension, for paths we can't resolve yet. */
+function basenameOf(path: string): string {
+	const name = path.slice(path.lastIndexOf("/") + 1);
+	const dot = name.lastIndexOf(".");
+	return dot > 0 ? name.slice(0, dot) : name;
+}
+
 const SOURCE_LABELS: Record<MatchSource, string> = {
 	name: "name",
 	path: "path",
@@ -211,9 +218,11 @@ export class HomeView extends ItemView {
 	 * on detached nodes until the view closed.
 	 */
 	private attachPreview(el: HTMLElement, path: string): void {
-		if (!(this.app.vault.getAbstractFileByPath(path) instanceof TFile)) return;
-
 		el.addEventListener("mouseover", (event) => {
+			// Checked on hover rather than on render: a row built before the vault
+			// index was ready would otherwise never get a preview.
+			if (!this.app.vault.getFileByPath(path)) return;
+
 			this.app.workspace.trigger("hover-link", {
 				event,
 				source: HOME_VIEW_TYPE,
@@ -538,7 +547,10 @@ export class HomeView extends ItemView {
 
 	private renderBookmarks(parent: HTMLElement): void {
 		const s = this.plugin.settings;
-		const items = this.collectBookmarks().slice(0, s.maxBookmarks);
+		// Newest first. Bookmarks are stored oldest-first, so taking from the front
+		// would surface the ones you set up long ago and buried, while anything
+		// added recently never appears. This matches the Recents block beside it.
+		const items = this.collectBookmarks().slice(-s.maxBookmarks).reverse();
 
 		const block = this.createBlock(parent, "Bookmarks", "bookmark");
 		if (!items.length) {
@@ -551,12 +563,18 @@ export class HomeView extends ItemView {
 
 		for (const item of items) {
 			const path = item.path ?? "";
-			const file = this.app.vault.getAbstractFileByPath(path);
-			const label = item.title || (file instanceof TFile ? file.basename : path);
+			const file = this.app.vault.getFileByPath(path);
+
+			// The file may not resolve yet: Obsidian restores views before the
+			// vault index is populated, so a bookmark can render early. Derive the
+			// label from the path in that case rather than showing the raw path.
+			const label = item.title || file?.basename || basenameOf(path);
+
 			this.createFileRow(block, label, path, "bookmark", () => {
-				if (file instanceof TFile) {
-					void this.app.workspace.getLeaf(false).openFile(file);
-				}
+				// Resolved at click time, not render time. A row rendered before the
+				// index was ready would otherwise stay permanently dead.
+				const target = this.app.vault.getFileByPath(path);
+				if (target) void this.app.workspace.getLeaf(false).openFile(target);
 			});
 		}
 	}
