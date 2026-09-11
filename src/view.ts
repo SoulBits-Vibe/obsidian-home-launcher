@@ -1,5 +1,6 @@
 import {
 	ItemView,
+	Notice,
 	Platform,
 	TFile,
 	WorkspaceLeaf,
@@ -8,7 +9,13 @@ import {
 	type BookmarkItem,
 } from "obsidian";
 import { HOME_VIEW_TYPE, type HomeAction } from "./types";
-import { VaultSearch, renderHighlighted, type FileMatch, type MatchSource } from "./search";
+import {
+	VaultSearch,
+	queryOmnisearch,
+	renderHighlighted,
+	type FileMatch,
+	type MatchSource,
+} from "./search";
 import { ActionRunner } from "./actions";
 import { parseQuotes, pickQuote, type Quote } from "./quotes";
 import type HomeLauncherPlugin from "./main";
@@ -52,6 +59,7 @@ export class HomeView extends ItemView {
 	private searchTimer: number | null = null;
 	/** Flipped to aborted whenever a newer query starts, so stale scans stop. */
 	private contentSignal = { aborted: false };
+	private omnisearchFallbackNotified = false;
 
 	private quotes: Quote[] = [];
 	private quoteOffset = 0;
@@ -343,17 +351,55 @@ export class HomeView extends ItemView {
 		// Stop any in-flight content scan from a previous keystroke.
 		this.contentSignal.aborted = true;
 		this.contentSignal = { aborted: false };
+		const signal = this.contentSignal;
 
+		if (this.plugin.settings.searchProvider === "omnisearch" && query.trim()) {
+			this.results = [];
+			this.selected = -1;
+			this.renderSuggestions();
+			void this.updateOmnisearchResults(query, signal);
+			return;
+		}
+
+		this.updateBuiltInResults(query, signal);
+	}
+
+	private async updateOmnisearchResults(
+		query: string,
+		signal: { aborted: boolean },
+	): Promise<void> {
+		try {
+			const results = await queryOmnisearch(this.app, query, this.plugin.settings);
+			if (signal.aborted) return;
+
+			if (results) {
+				this.omnisearchFallbackNotified = false;
+				this.results = results;
+				this.selected = results.length ? 0 : -1;
+				this.renderSuggestions();
+				return;
+			}
+		} catch {
+			// A failed optional provider should not make the home search unusable.
+		}
+
+		if (!this.omnisearchFallbackNotified) {
+			new Notice("Omnisearch is unavailable. Using built-in search.");
+			this.omnisearchFallbackNotified = true;
+		}
+		if (signal.aborted) return;
+		this.updateBuiltInResults(query, signal);
+	}
+
+	private updateBuiltInResults(query: string, signal: { aborted: boolean }): void {
 		this.results = this.search.queryMetadata(query);
 		this.selected = this.results.length ? 0 : -1;
 		this.renderSuggestions();
 
 		if (!this.plugin.settings.searchContent || !query.trim()) return;
 
-		const signal = this.contentSignal;
 		const seen = new Set(this.results.map((r) => r.path));
 		const room = this.plugin.settings.maxResults - this.results.length;
-
 		void (async () => {
 			// First fill in counts, headings and excerpts for the rows already shown,
 			// then look for notes that only match in their body.
@@ -361,8 +407,7 @@ export class HomeView extends ItemView {
 				if (!signal.aborted) this.renderSuggestions();
 			});
 			if (signal.aborted) return;
-
-			await this.search.queryContent(query, seen, Math.max(room, 3), signal, (match) => {
+			await this.search.queryContent(query, seen, room, signal, (match) => {
 				if (signal.aborted) return;
 				this.results.push(match);
 				if (this.selected < 0) this.selected = 0;

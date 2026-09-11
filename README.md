@@ -17,15 +17,21 @@ command, open a file, reveal a folder, run a search, or open a URL.
 
 ### Search
 
-Matches file names, paths, aliases, headings, tags, and note contents. Every result explains
-itself: the note's H1, the section heading the match sits under, an excerpt of the matching
-line, the folder it lives in, and how many times your terms appear.
+Home Launcher includes its own built-in search, which is used by default. It matches file
+names, paths, aliases, headings, tags, and note contents. Every result explains itself: the
+note's H1, the section heading the match sits under, an excerpt of the matching line, the
+folder it lives in, and how many times your terms appear.
+
+If you already use the separately installed Omnisearch community plugin, you can choose
+Omnisearch instead under **Search → Search engine**. Home Launcher connects to its public API
+and shows its results in the same search box; it does not include or install Omnisearch.
 
 - Names, aliases, headings and tags resolve instantly from the metadata cache
 - Note contents are scanned in the background, so you never wait on a body search to see an
   obvious filename hit
 - Optional unresolved links — select one to create the note
-- Self-contained; no dependency on any other search plugin
+- Built-in search remains self-contained, with no dependency on another search plugin
+- Optional Omnisearch provider — use its index and ranking in the same home-page UI
 - Keyboard driven: `↑ ↓` to navigate, `↵` to open, `Ctrl/Cmd ↵` for a new tab, `Esc` to clear
 
 ### Buttons
@@ -74,6 +80,11 @@ Grouped into five pages — Appearance, Search, Buttons, Recents and bookmarks, 
 rather than one long scroll. Logo, title, colours, fonts, result counts, search scope,
 startup behaviour and new-tab replacement are all configurable.
 
+Search defaults to Home Launcher's built-in engine. To use the optional Omnisearch provider,
+install and enable Omnisearch separately, then choose it under **Search → Search engine**.
+Home Launcher does not bundle or install Omnisearch; if it is unavailable, search falls back
+to the built-in engine.
+
 Built on Obsidian's declarative settings API, so every setting is **findable from Obsidian's
 own settings search**, and paths use real file and folder pickers instead of typed-out text.
 
@@ -83,7 +94,7 @@ own settings search**, and paths use real file and folder pickers instead of typ
 
 | Your Obsidian | Version you get |
 | --- | --- |
-| 1.13.0 and later | **1.1.0** |
+| 1.13.0 and later | **1.2.0** |
 | 1.11.0 – 1.12.x | **1.0.2** |
 | Older than 1.11 | not supported |
 
