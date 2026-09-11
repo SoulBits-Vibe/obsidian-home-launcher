@@ -17,17 +17,21 @@ command, open a file, reveal a folder, run a search, or open a URL.
 
 ### Search
 
-Matches file names, paths, aliases, headings, tags, and note contents. Every result explains
-itself: the note's H1, the section heading the match sits under, an excerpt of the matching
-line, the folder it lives in, and how many times your terms appear.
+Home Launcher includes its own built-in search, which is used by default. It matches file
+names, paths, aliases, headings, tags, and note contents. Every result explains itself: the
+note's H1, the section heading the match sits under, an excerpt of the matching line, the
+folder it lives in, and how many times your terms appear.
+
+If you already use the separately installed Omnisearch community plugin, you can choose
+Omnisearch instead under **Search → Search engine**. Home Launcher connects to its public API
+and shows its results in the same search box; it does not include or install Omnisearch.
 
 - Names, aliases, headings and tags resolve instantly from the metadata cache
 - Note contents are scanned in the background, so you never wait on a body search to see an
   obvious filename hit
 - Optional unresolved links — select one to create the note
 - Built-in search remains self-contained, with no dependency on another search plugin
-- Optional Omnisearch provider — connect to a separately installed and enabled copy of
-  Omnisearch, using its index and ranking in the same home-page UI
+- Optional Omnisearch provider — use its index and ranking in the same home-page UI
 - Keyboard driven: `↑ ↓` to navigate, `↵` to open, `Ctrl/Cmd ↵` for a new tab, `Esc` to clear
 
 ### Buttons
