@@ -94,7 +94,7 @@ own settings search**, and paths use real file and folder pickers instead of typ
 
 | Your Obsidian | Version you get |
 | --- | --- |
-| 1.13.0 and later | **1.1.0** |
+| 1.13.0 and later | **1.2.0** |
 | 1.11.0 – 1.12.x | **1.0.2** |
 | Older than 1.11 | not supported |
 
