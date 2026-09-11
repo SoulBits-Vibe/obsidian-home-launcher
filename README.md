@@ -26,7 +26,8 @@ line, the folder it lives in, and how many times your terms appear.
   obvious filename hit
 - Optional unresolved links — select one to create the note
 - Built-in search remains self-contained, with no dependency on another search plugin
-- Optional Omnisearch provider — use Omnisearch's index and ranking in the same home-page UI
+- Optional Omnisearch provider — connect to a separately installed and enabled copy of
+  Omnisearch, using its index and ranking in the same home-page UI
 - Keyboard driven: `↑ ↓` to navigate, `↵` to open, `Ctrl/Cmd ↵` for a new tab, `Esc` to clear
 
 ### Buttons
@@ -74,6 +75,11 @@ or off for this plugin specifically under **Settings → Page preview**.
 Grouped into five pages — Appearance, Search, Buttons, Recents and bookmarks, Behaviour —
 rather than one long scroll. Logo, title, colours, fonts, result counts, search scope,
 startup behaviour and new-tab replacement are all configurable.
+
+Search defaults to Home Launcher's built-in engine. To use the optional Omnisearch provider,
+install and enable Omnisearch separately, then choose it under **Search → Search engine**.
+Home Launcher does not bundle or install Omnisearch; if it is unavailable, search falls back
+to the built-in engine.
 
 Built on Obsidian's declarative settings API, so every setting is **findable from Obsidian's
 own settings search**, and paths use real file and folder pickers instead of typed-out text.
