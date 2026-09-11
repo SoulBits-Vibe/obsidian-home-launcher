@@ -32,6 +32,20 @@ export interface FileMatch {
 	excerpt?: HighlightedText;
 }
 
+/** Public API exposed by Omnisearch on the Obsidian window. */
+interface OmnisearchApi {
+	search(query: string): Promise<OmnisearchResult[]>;
+}
+
+interface OmnisearchResult {
+	score: number;
+	path: string;
+	basename: string;
+	foundWords: string[];
+	matches: { match: string; offset: number }[];
+	excerpt: string;
+}
+
 /** Files bigger than this are skipped by content search to keep typing responsive. */
 const MAX_CONTENT_BYTES = 2 * 1024 * 1024;
 /** Total bytes a single content pass will read before giving up. */
@@ -320,6 +334,51 @@ export class VaultSearch {
 	}
 }
 
+/**
+ * Query Omnisearch through its documented public API and adapt its results to
+ * the rows the Home view already renders. Returns null when Omnisearch is not
+ * installed, enabled, or ready, so callers can retain the built-in fallback.
+ */
+export async function queryOmnisearch(
+	app: App,
+	input: string,
+	settings: HomeSettings,
+): Promise<FileMatch[] | null> {
+	const pluginWindow = window as Window & { omnisearch?: OmnisearchApi };
+	if (!pluginWindow.omnisearch) return null;
+
+	const results = await pluginWindow.omnisearch.search(input);
+	const matches: FileMatch[] = [];
+
+	for (const result of results) {
+		const file = app.vault.getFileByPath(result.path);
+		if (!(file instanceof TFile)) continue;
+		if (settings.markdownOnly && file.extension !== "md") continue;
+
+		const basename = result.basename || file.basename;
+		const nameMatches = findTerms(basename, result.foundWords);
+		const excerpt = decodeOmnisearchExcerpt(result.excerpt);
+		matches.push({
+			file,
+			path: file.path,
+			basename,
+			extension: file.extension,
+			unresolved: false,
+			score: result.score,
+			source: nameMatches.length ? "name" : "content",
+			matches: nameMatches,
+			matchCount: result.matches.length || undefined,
+			excerpt: settings.showExcerpt && excerpt
+				? { text: excerpt, matches: findTerms(excerpt, result.foundWords) }
+				: undefined,
+		});
+
+		if (matches.length >= settings.maxResults) break;
+	}
+
+	return matches;
+}
+
 // ── Free functions ────────────────────────────────────────────────────────
 
 function splitTerms(input: string): string[] {
@@ -358,6 +417,19 @@ function findTerms(text: string, terms: string[]): [number, number][] {
 		}
 	}
 	return out;
+}
+
+/** Omnisearch escapes excerpts for HTML and may use `<br>` for line breaks. */
+function decodeOmnisearchExcerpt(excerpt: string): string {
+	return excerpt
+		.replaceAll("<br>", " ")
+		.replaceAll("&lt;", "<")
+		.replaceAll("&gt;", ">")
+		.replaceAll("&quot;", '"')
+		.replaceAll("&#039;", "'")
+		.replaceAll("&amp;", "&")
+		.replace(/\s+/g, " ")
+		.trim();
 }
 
 /** Drops a leading YAML frontmatter block so content search sees only the body. */

@@ -25,7 +25,8 @@ line, the folder it lives in, and how many times your terms appear.
 - Note contents are scanned in the background, so you never wait on a body search to see an
   obvious filename hit
 - Optional unresolved links — select one to create the note
-- Self-contained; no dependency on any other search plugin
+- Built-in search remains self-contained, with no dependency on another search plugin
+- Optional Omnisearch provider — use Omnisearch's index and ranking in the same home-page UI
 - Keyboard driven: `↑ ↓` to navigate, `↵` to open, `Ctrl/Cmd ↵` for a new tab, `Esc` to clear
 
 ### Buttons

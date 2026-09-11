@@ -303,6 +303,18 @@ export class HomeSettingTab extends PluginSettingTab {
 			desc: "What gets searched, and how results are shown.",
 			items: [
 				{
+					name: "Search engine",
+					desc: "Use the built-in search or the optional Omnisearch community plugin.",
+					control: {
+						type: "dropdown",
+						key: "searchProvider",
+						options: {
+							"home-launcher": "Home Launcher",
+							omnisearch: "Omnisearch",
+						},
+					},
+				},
+				{
 					type: "group",
 					heading: "Results",
 					items: [
@@ -341,17 +353,20 @@ export class HomeSettingTab extends PluginSettingTab {
 						{
 							name: "Search note contents",
 							desc: "Also match text inside notes, not just names, aliases, headings and tags.",
+							visible: () => this.s.searchProvider === "home-launcher",
 							control: { type: "toggle", key: "searchContent" },
 						},
 						{
 							name: "Show excerpts",
 							desc: "Show the matching line of text under content results.",
-							visible: () => this.s.searchContent,
+							visible: () =>
+								this.s.searchProvider === "omnisearch" || this.s.searchContent,
 							control: { type: "toggle", key: "showExcerpt" },
 						},
 						{
 							name: "Show why a result matched",
 							desc: "Label results that matched an alias, heading, tag or note body.",
+							visible: () => this.s.searchProvider === "home-launcher",
 							control: { type: "toggle", key: "showMatchSource" },
 						},
 						{
@@ -362,6 +377,7 @@ export class HomeSettingTab extends PluginSettingTab {
 						{
 							name: "Include unresolved links",
 							desc: "Show notes that are linked to but do not exist yet. Selecting one creates it.",
+							visible: () => this.s.searchProvider === "home-launcher",
 							control: { type: "toggle", key: "showUnresolvedLinks" },
 						},
 					],
