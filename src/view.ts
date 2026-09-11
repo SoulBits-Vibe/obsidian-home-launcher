@@ -407,7 +407,7 @@ export class HomeView extends ItemView {
 				if (!signal.aborted) this.renderSuggestions();
 			});
 			if (signal.aborted) return;
-			await this.search.queryContent(query, seen, Math.max(room, 3), signal, (match) => {
+			await this.search.queryContent(query, seen, room, signal, (match) => {
 				if (signal.aborted) return;
 				this.results.push(match);
 				if (this.selected < 0) this.selected = 0;
