@@ -61,6 +61,7 @@ export type ColorSource = "default" | "accent" | "custom";
 export type FontChoice = "interface" | "text" | "monospace";
 export type ActionStyle = "pill" | "icon" | "card";
 export type LogoKind = "none" | "icon" | "image";
+export type SearchProvider = "home-launcher" | "omnisearch";
 
 export interface HomeSettings {
 	// ── Header ────────────────────────────────────────────────────────────
@@ -88,6 +89,7 @@ export interface HomeSettings {
 	quotePosition: "above" | "below";
 
 	// ── Search ────────────────────────────────────────────────────────────
+	searchProvider: SearchProvider;
 	searchPlaceholder: string;
 	maxResults: number;
 	searchDelay: number;
@@ -153,6 +155,7 @@ export const DEFAULT_SETTINGS: HomeSettings = {
 	quoteRotation: "daily",
 	quotePosition: "above",
 
+	searchProvider: "home-launcher",
 	searchPlaceholder: "Search your vault…",
 	maxResults: 8,
 	searchDelay: 0,
