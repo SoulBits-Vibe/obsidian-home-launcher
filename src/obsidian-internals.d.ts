@@ -26,6 +26,31 @@ declare module "obsidian" {
 		template?: string;
 	}
 
+	/** One period's settings in Periodic Notes (daily, weekly…). */
+	interface PeriodicNotesPeriod {
+		enabled?: boolean;
+		folder?: string;
+		format?: string;
+		/** 0.x name for the template path. */
+		template?: string;
+		/** 1.x name for the template path. */
+		templatePath?: string;
+	}
+
+	/**
+	 * The community Periodic Notes plugin's settings. 0.x keeps one `daily`
+	 * entry; the 1.x betas move it into named calendar sets under `day`.
+	 */
+	interface PeriodicNotesSettings {
+		daily?: PeriodicNotesPeriod;
+		activeCalendarSet?: string;
+		calendarSets?: { id?: string; day?: PeriodicNotesPeriod }[];
+	}
+
+	interface CommunityPlugin {
+		settings?: PeriodicNotesSettings;
+	}
+
 	interface InternalPluginInstance {
 		openGlobalSearch?(query: string): void;
 		getBookmarks?(): BookmarkItem[];
@@ -46,6 +71,10 @@ declare module "obsidian" {
 		commands: {
 			executeCommandById(id: string): boolean;
 			listCommands(): ObsidianCommand[];
+		};
+		plugins: {
+			enabledPlugins: Set<string>;
+			getPlugin(id: string): CommunityPlugin | null;
 		};
 		internalPlugins: {
 			getPluginById(id: string): InternalPluginWrapper | null;

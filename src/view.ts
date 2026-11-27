@@ -7,7 +7,7 @@ import {
 	normalizePath,
 	type BookmarkItem,
 } from "obsidian";
-import { HOME_VIEW_TYPE, type HomeAction } from "./types";
+import { HOME_VIEW_TYPE, type BlockLayout, type HomeAction } from "./types";
 import { VaultSearch, renderHighlighted, type FileMatch, type MatchSource } from "./search";
 import { ActionRunner } from "./actions";
 import { parseQuotes, pickQuote, type Quote } from "./quotes";
@@ -52,6 +52,9 @@ export class HomeView extends ItemView {
 	private searchTimer: number | null = null;
 	/** Flipped to aborted whenever a newer query starts, so stale scans stop. */
 	private contentSignal = { aborted: false };
+
+	/** Dropdown blocks the user has opened, by title. Closed by default. */
+	private openBlocks = new Set<string>();
 
 	private quotes: Quote[] = [];
 	private quoteOffset = 0;
@@ -533,13 +536,14 @@ export class HomeView extends ItemView {
 			.filter((f): f is TFile => f instanceof TFile)
 			.slice(0, s.maxRecents);
 
-		const block = this.createBlock(parent, "Recent", "clock");
+		const layout = s.recentsLayout;
+		const block = this.createBlock(parent, "Recent", "clock", layout);
 		if (!files.length) {
 			block.createDiv({ cls: "home-launcher-empty", text: "No recent files yet." });
 			return;
 		}
 		for (const file of files) {
-			this.createFileRow(block, file.basename, file.path, "file-text", () => {
+			this.createFileRow(block, file.basename, file.path, "file-text", layout !== "pills", () => {
 				void this.app.workspace.getLeaf(false).openFile(file);
 			});
 		}
@@ -559,7 +563,8 @@ export class HomeView extends ItemView {
 			.filter((b) => b.path && this.app.vault.getFileByPath(b.path))
 			.slice(-s.maxBookmarks);
 
-		const block = this.createBlock(parent, "Bookmarks", "bookmark");
+		const layout = s.bookmarkLayout;
+		const block = this.createBlock(parent, "Bookmarks", "bookmark", layout);
 		if (!items.length) {
 			block.createDiv({
 				cls: "home-launcher-empty",
@@ -577,7 +582,7 @@ export class HomeView extends ItemView {
 			// label from the path in that case rather than showing the raw path.
 			const label = item.title || file?.basename || basenameOf(path);
 
-			this.createFileRow(block, label, path, "bookmark", () => {
+			this.createFileRow(block, label, path, "bookmark", layout !== "pills", () => {
 				// Resolved at click time, not render time. A row rendered before the
 				// index was ready would otherwise stay permanently dead.
 				const target = this.app.vault.getFileByPath(path);
@@ -602,13 +607,51 @@ export class HomeView extends ItemView {
 		return out;
 	}
 
-	private createBlock(parent: HTMLElement, title: string, icon: string): HTMLElement {
+	/**
+	 * Builds a block and returns its body. In the dropdown layout the heading
+	 * becomes a toggle; which blocks are open is kept on the view, because the
+	 * blocks are rebuilt every time a file opens and would otherwise snap shut.
+	 */
+	private createBlock(
+		parent: HTMLElement,
+		title: string,
+		icon: string,
+		layout: BlockLayout,
+	): HTMLElement {
 		const block = parent.createDiv({ cls: "home-launcher-block" });
 		const head = block.createDiv({ cls: "home-launcher-block-head" });
 		const iconEl = head.createDiv({ cls: "home-launcher-block-icon" });
 		setIcon(iconEl, icon);
 		head.createSpan({ cls: "home-launcher-block-title", text: title });
-		return block.createDiv({ cls: "home-launcher-block-body" });
+		const body = block.createDiv({ cls: `home-launcher-block-body is-${layout}` });
+
+		if (layout === "dropdown") {
+			const chevron = head.createDiv({ cls: "home-launcher-block-chevron" });
+			setIcon(chevron, "chevron-down");
+			head.addClass("is-toggle");
+			head.setAttribute("role", "button");
+			head.setAttribute("tabindex", "0");
+
+			const paint = () => {
+				const open = this.openBlocks.has(title);
+				block.toggleClass("is-collapsed", !open);
+				head.setAttribute("aria-expanded", String(open));
+			};
+			const toggle = () => {
+				if (this.openBlocks.has(title)) this.openBlocks.delete(title);
+				else this.openBlocks.add(title);
+				paint();
+			};
+			head.addEventListener("click", toggle);
+			head.addEventListener("keydown", (evt) => {
+				if (evt.key === "Enter" || evt.key === " ") {
+					evt.preventDefault();
+					toggle();
+				}
+			});
+			paint();
+		}
+		return body;
 	}
 
 	private createFileRow(
@@ -616,6 +659,7 @@ export class HomeView extends ItemView {
 		label: string,
 		path: string,
 		icon: string,
+		showPath: boolean,
 		onClick: () => void,
 	): void {
 		const row = parent.createDiv({ cls: "home-launcher-row" });
@@ -624,7 +668,8 @@ export class HomeView extends ItemView {
 
 		const body = row.createDiv({ cls: "home-launcher-row-body" });
 		body.createDiv({ cls: "home-launcher-row-title", text: label });
-		if (this.plugin.settings.showPath && path.includes("/")) {
+		row.setAttribute("aria-label", label);
+		if (showPath && this.plugin.settings.showPath && path.includes("/")) {
 			body.createDiv({
 				cls: "home-launcher-row-path",
 				text: path.slice(0, path.lastIndexOf("/")),

@@ -554,6 +554,103 @@
 	text-overflow: ellipsis;
 }
 
+/* Cards and pills: recents and bookmarks share this, and stay side by side —
+   the tiles form columns inside each block's own half of the row. */
+.home-launcher-block-body.is-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: var(--size-4-2);
+}
+
+.home-launcher-block-body.is-cards .home-launcher-row {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--size-4-1);
+	padding: var(--size-4-3);
+	background: var(--background-primary-alt);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--home-radius);
+	transition: background 120ms ease, border-color 120ms ease;
+}
+
+.home-launcher-block-body.is-cards .home-launcher-row:hover {
+	background: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border-hover);
+}
+
+.home-launcher-block-body.is-cards .home-launcher-row-icon {
+	color: var(--text-accent);
+}
+
+.home-launcher-block-body.is-cards .home-launcher-row-body {
+	width: 100%;
+}
+
+.home-launcher-block-body.is-cards .home-launcher-row-title {
+	font-weight: var(--font-semibold);
+}
+
+.home-launcher-block-body.is-pills {
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
+}
+
+.home-launcher-block-body.is-pills .home-launcher-row {
+	flex: 0 1 auto;
+	max-width: 100%;
+	padding: var(--size-4-1) var(--size-4-3);
+	background: var(--background-primary-alt);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 999px;
+	transition: background 120ms ease, border-color 120ms ease;
+}
+
+.home-launcher-block-body.is-pills .home-launcher-row:hover {
+	background: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border-hover);
+}
+
+.home-launcher-block-body.is-pills .home-launcher-row-icon {
+	color: var(--text-accent);
+}
+
+/* Dropdown: the heading toggles the list open and shut. */
+.home-launcher-block-head.is-toggle {
+	padding: var(--size-4-2);
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.home-launcher-block-head.is-toggle:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.home-launcher-block-chevron {
+	display: flex;
+	margin-left: auto;
+	transition: transform 120ms ease;
+}
+
+.home-launcher-block-chevron .svg-icon {
+	width: 14px;
+	height: 14px;
+}
+
+.home-launcher-block.is-collapsed .home-launcher-block-chevron {
+	transform: rotate(-90deg);
+}
+
+.home-launcher-block.is-collapsed .home-launcher-block-body {
+	display: none;
+}
+
+.home-launcher-block-body.is-cards .home-launcher-empty,
+.home-launcher-block-body.is-pills .home-launcher-empty {
+	grid-column: 1 / -1;
+}
+
 .home-launcher-empty {
 	padding: var(--size-4-2);
 	color: var(--text-faint);
