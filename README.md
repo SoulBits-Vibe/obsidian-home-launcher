@@ -40,7 +40,7 @@ Define your own. Each has a label, any Lucide icon, and one action:
 
 | Action | What it does |
 | --- | --- |
-| Create new page | Makes and opens a note, optionally in a set folder |
+| Create new page | Makes and opens a note, optionally in a set folder, with the title ready to type |
 | Quick capture | Appends a line to today's daily note or a file you choose |
 | Run a command | Any command in your vault, picked from a dropdown |
 | Open a file | Jumps straight to a note |
@@ -51,13 +51,21 @@ Define your own. Each has a label, any Lucide icon, and one action:
 Buttons can be reordered, and hidden without deleting them. Three styles: pill, icon-only, or
 card grid.
 
+A new page opens with its title selected, the way Obsidian's own new note does, so you can
+name it straight away. Prefer to start in the body? Change **New page cursor** under
+**Behaviour**.
+
 ### Quick capture
 
-Appends to today's daily note, following your existing Daily Notes settings for folder, date
-format and template. Optionally targets a named heading, adding entries at the end of that
+Appends to today's daily note, following your existing settings for folder, date format and
+template. If the community Periodic Notes plugin is on with daily notes enabled, its settings
+are used; otherwise the core Daily Notes plugin's. Optionally targets a named heading, adding entries at the end of that
 section so they stay in order. Or point it at any single file instead.
 
 Supports `{{text}}`, `{{time}}` and `{{date}}` in the line format.
+
+To capture some other way, such as a Templater template, add a **Run a command** button that
+runs that command instead.
 
 ### Quote of the day
 
@@ -71,6 +79,8 @@ with ` — Author` for attribution.
 ### Recent files and bookmarks
 
 Recents are tracked as you open notes. Bookmarks come from Obsidian's core Bookmarks plugin.
+Each block has its own layout: a list, a dropdown that stays folded until you click its
+heading, or cards or pills that fit several entries side by side.
 Both rows support hover preview through the core Page preview plugin, which you can toggle on
 or off for this plugin specifically under **Settings → Page preview**.
 

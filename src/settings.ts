@@ -8,7 +8,8 @@ import {
 	type TFile,
 } from "obsidian";
 import type HomeLauncherPlugin from "./main";
-import type { ActionKind, HomeAction, HomeSettings } from "./types";
+import { ActionRunner } from "./actions";
+import type { ActionKind, BlockLayout, HomeAction, HomeSettings } from "./types";
 
 const ACTION_KIND_LABELS: Record<ActionKind, string> = {
 	"new-note": "Create new page",
@@ -35,6 +36,17 @@ const TARGET_PLACEHOLDERS: Record<ActionKind, string> = {
 	search: "tag:#todo",
 	url: "https://example.com",
 };
+
+const LAYOUT_OPTIONS: Record<BlockLayout, string> = {
+	list: "List",
+	dropdown: "Dropdown",
+	cards: "Cards",
+	pills: "Pills",
+};
+
+const LAYOUT_DESC =
+	"Dropdown folds the list away until you click its heading. " +
+	"Cards and pills fit more entries side by side.";
 
 const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp"];
 
@@ -532,7 +544,14 @@ export class HomeSettingTab extends PluginSettingTab {
 						{
 							name: "Number of recent files",
 							visible: () => this.s.showRecents,
-							control: { type: "slider", key: "maxRecents", min: 3, max: 25, step: 1 },
+							control: { type: "slider", key: "maxRecents", min: 3, max: 50, step: 1 },
+						},
+						{
+							name: "Recent files layout",
+							desc: LAYOUT_DESC,
+							aliases: ["columns", "grid", "buttons", "collapse"],
+							visible: () => this.s.showRecents,
+							control: { type: "dropdown", key: "recentsLayout", options: LAYOUT_OPTIONS },
 						},
 						{
 							name: "Track opened files",
@@ -564,12 +583,36 @@ export class HomeSettingTab extends PluginSettingTab {
 						{
 							name: "Number of bookmarks",
 							visible: () => this.s.showBookmarks,
-							control: { type: "slider", key: "maxBookmarks", min: 3, max: 25, step: 1 },
+							control: { type: "slider", key: "maxBookmarks", min: 3, max: 50, step: 1 },
+						},
+						{
+							name: "Bookmark layout",
+							desc: LAYOUT_DESC,
+							aliases: ["columns", "grid", "buttons", "collapse"],
+							visible: () => this.s.showBookmarks,
+							control: { type: "dropdown", key: "bookmarkLayout", options: LAYOUT_OPTIONS },
 						},
 					],
 				},
 			],
 		};
+	}
+
+	/**
+	 * Says which plugin's daily note settings capture follows, and where that
+	 * puts today's note. Worked out when the settings page opens.
+	 */
+	private dailyNoteDesc(): string {
+		const config = new ActionRunner(this.app, this.s).dailyNoteConfig();
+		const where = `in ${config.folder || "the vault root"}, named ${config.format}`;
+		switch (config.source) {
+			case "periodic":
+				return `Today's daily note follows Periodic Notes: ${where}.`;
+			case "core":
+				return `Today's daily note follows Daily notes: ${where}.`;
+			default:
+				return `No daily notes plugin is on, so today's note goes ${where}.`;
+		}
 	}
 
 	private behaviourPage(): SettingDefinitionPage {
@@ -605,8 +648,18 @@ export class HomeSettingTab extends PluginSettingTab {
 							control: { type: "folder", key: "newNoteFolder", includeRoot: true },
 						},
 						{
+							name: "New page cursor",
+							desc: "Where typing starts in a page made by the new page button.",
+							aliases: ["focus", "title", "untitled"],
+							control: {
+								type: "dropdown",
+								key: "newNoteFocus",
+								options: { title: "Title, selected", body: "Note body" },
+							},
+						},
+						{
 							name: "Quick capture goes to",
-							desc: "Daily note uses your daily notes folder, date format and template.",
+							desc: this.dailyNoteDesc(),
 							control: {
 								type: "dropdown",
 								key: "captureTarget",

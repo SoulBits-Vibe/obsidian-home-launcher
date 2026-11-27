@@ -6,6 +6,7 @@ import {
 	TFolder,
 	normalizePath,
 	moment,
+	type PeriodicNotesPeriod,
 } from "obsidian";
 import type { HomeAction, HomeSettings } from "./types";
 
@@ -85,7 +86,17 @@ export class ActionRunner {
 		}
 
 		const file = await this.app.vault.create(this.untitledPath(parent), "");
-		await this.app.workspace.getLeaf(false).openFile(file);
+
+		// `rename: "all"` is what Obsidian passes when it creates a note itself:
+		// it focuses the inline title with the text selected, so typing replaces
+		// "Untitled". With the inline title hidden, Obsidian falls back to its
+		// rename prompt. Without it the cursor goes straight into the body.
+		const eState = this.settings.newNoteFocus === "title" ? { rename: "all" } : { focus: true };
+		await this.app.workspace.getLeaf(false).openFile(file, {
+			active: true,
+			state: { mode: "source" },
+			eState,
+		});
 		return file;
 	}
 
@@ -126,14 +137,54 @@ export class ActionRunner {
 			: normalizePath(this.settings.quickCaptureFile.trim() || "Capture.md");
 	}
 
-	/** Today's daily note path, following the core Daily Notes settings. */
+	/** Today's daily note path, following whichever daily notes plugin is in use. */
 	private dailyNotePath(): string {
-		const options =
-			this.app.internalPlugins.getPluginById("daily-notes")?.instance?.options ?? {};
-		const format = options.format?.trim() || "YYYY-MM-DD";
-		const folder = options.folder?.trim() ?? "";
+		const { format, folder } = this.dailyNoteConfig();
 		const name = `${now().format(format)}.md`;
 		return normalizePath(folder ? `${folder}/${name}` : name);
+	}
+
+	/**
+	 * Folder, date format and template for daily notes. Periodic Notes wins when
+	 * it is enabled with daily notes switched on, since people install it to
+	 * replace the core plugin and often turn the core one off. Otherwise the core
+	 * Daily Notes settings apply, and failing both, Obsidian's own defaults.
+	 */
+	dailyNoteConfig(): { source: "periodic" | "core" | "default"; format: string; folder: string; template: string } {
+		const periodic = this.periodicDaily();
+		if (periodic) {
+			return {
+				source: "periodic",
+				format: periodic.format?.trim() || "YYYY-MM-DD",
+				folder: periodic.folder?.trim() ?? "",
+				template: (periodic.templatePath ?? periodic.template ?? "").trim(),
+			};
+		}
+
+		const core = this.app.internalPlugins.getPluginById("daily-notes");
+		const options = core?.enabled ? (core.instance?.options ?? {}) : {};
+		return {
+			source: core?.enabled ? "core" : "default",
+			format: options.format?.trim() || "YYYY-MM-DD",
+			folder: options.folder?.trim() ?? "",
+			template: options.template?.trim() ?? "",
+		};
+	}
+
+	private periodicDaily(): PeriodicNotesPeriod | null {
+		if (!this.app.plugins?.enabledPlugins?.has("periodic-notes")) return null;
+		const settings = this.app.plugins.getPlugin("periodic-notes")?.settings;
+		if (!settings) return null;
+
+		// 1.x: the active calendar set's "day" period.
+		if (settings.calendarSets?.length) {
+			const set =
+				settings.calendarSets.find((c) => c.id === settings.activeCalendarSet) ??
+				settings.calendarSets[0];
+			return set.day?.enabled ? set.day : null;
+		}
+		// 0.x: a single "daily" period.
+		return settings.daily?.enabled ? settings.daily : null;
 	}
 
 	/** Finds today's note (or the configured file), creating it if missing. */
@@ -147,8 +198,7 @@ export class ActionRunner {
 		// Seed a new daily note from the configured template, as Daily Notes does.
 		let initial = "";
 		if (this.settings.captureTarget === "daily") {
-			const templatePath =
-				this.app.internalPlugins.getPluginById("daily-notes")?.instance?.options?.template;
+			const templatePath = this.dailyNoteConfig().template;
 			if (templatePath) {
 				const template = this.app.vault.getAbstractFileByPath(
 					normalizePath(templatePath.endsWith(".md") ? templatePath : `${templatePath}.md`),

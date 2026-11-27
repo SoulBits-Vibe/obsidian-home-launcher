@@ -37,6 +37,18 @@ export interface HomeAction {
 /** Where quick capture appends. Daily note follows your Daily Notes settings. */
 export type CaptureTarget = "daily" | "file";
 
+/**
+ * Where the cursor lands in a note created by the new page button. "title"
+ * matches Obsidian's own new-note behaviour: the inline title, selected.
+ */
+export type NewNoteFocus = "title" | "body";
+
+/**
+ * How the recents and bookmarks blocks lay out their entries. "dropdown" is a
+ * list folded away under its heading until clicked open.
+ */
+export type BlockLayout = "list" | "cards" | "pills" | "dropdown";
+
 /** "daily" holds one quote steady all day; "random" changes on every open. */
 export type QuoteRotation = "daily" | "random";
 
@@ -98,11 +110,13 @@ export interface HomeSettings {
 	// ── Blocks ────────────────────────────────────────────────────────────
 	showRecents: boolean;
 	maxRecents: number;
+	recentsLayout: BlockLayout;
 	storeRecents: boolean;
 	recentsStore: RecentFile[];
 
 	showBookmarks: boolean;
 	maxBookmarks: number;
+	bookmarkLayout: BlockLayout;
 
 	// ── Behaviour ─────────────────────────────────────────────────────────
 	replaceNewTabs: boolean;
@@ -111,6 +125,7 @@ export interface HomeSettings {
 
 	// ── New note / capture targets ────────────────────────────────────────
 	newNoteFolder: string;
+	newNoteFocus: NewNoteFocus;
 	captureTarget: CaptureTarget;
 	/** Only used when `captureTarget` is "file". */
 	quickCaptureFile: string;
@@ -177,17 +192,20 @@ export const DEFAULT_SETTINGS: HomeSettings = {
 
 	showRecents: true,
 	maxRecents: 8,
+	recentsLayout: "list",
 	storeRecents: true,
 	recentsStore: [],
 
 	showBookmarks: true,
 	maxBookmarks: 8,
+	bookmarkLayout: "list",
 
 	replaceNewTabs: true,
 	openOnStartup: false,
 	focusSearchOnOpen: true,
 
 	newNoteFolder: "",
+	newNoteFocus: "title",
 	captureTarget: "daily",
 	quickCaptureFile: "",
 	captureHeading: "",
